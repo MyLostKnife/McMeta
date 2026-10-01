@@ -21,8 +21,53 @@
       --mint: #66d9a2;
       --orange: #f2a76b;
       --red: #ff8878;
+      --panel-bg: #171e19f2;
+      --surface: #202a22;
+      --control: #111712;
+      --editor: #101511;
+      --field-text: #f2f4ec;
+      --soft-text: #d9e2d8;
+      --strong-line: #48564a;
+      --subtle-line: #3a483d;
+      --accent-ink: #101511;
+      --accent-outline: #efffc8;
+      --accent-shadow: #51613b;
+      --ambient: #28352a;
+      --pattern: #18221a;
+      --focus-ring: #c4f26630;
+      --shadow-color: #0003;
       --mono: "DM Mono", Consolas, monospace;
       --sans: "Space Grotesk", "Trebuchet MS", sans-serif;
+    }
+    :root[data-theme="dark-blue"] {
+      color-scheme: dark;
+      --bg: #09111d; --panel: #111b2b; --panel-bg: #111b2bf2; --panel-raised: #19283a;
+      --line: #33465d; --strong-line: #465b75; --subtle-line: #33465d;
+      --text: #f0f5ff; --field-text: #edf3ff; --soft-text: #d4e0f1; --muted: #9cadc4;
+      --lime: #64c5ff; --mint: #56ddb7; --orange: #ffb568; --red: #ff827f;
+      --surface: #19283a; --control: #101a29; --editor: #0b1422; --accent-ink: #081522;
+      --accent-outline: #d7f2ff; --accent-shadow: #25445c; --ambient: #182b43; --pattern: #112035;
+      --focus-ring: #64c5ff40; --shadow-color: #0005;
+    }
+    :root[data-theme="black"] {
+      color-scheme: dark;
+      --bg: #050505; --panel: #111111; --panel-bg: #111111f2; --panel-raised: #1b1b1b;
+      --line: #353535; --strong-line: #555; --subtle-line: #3b3b3b;
+      --text: #f5f5f5; --field-text: #fff; --soft-text: #dedede; --muted: #a7a7a7;
+      --lime: #e6e6e6; --mint: #bcbcbc; --orange: #d0d0d0; --red: #ff8282;
+      --surface: #222; --control: #161616; --editor: #080808; --accent-ink: #111;
+      --accent-outline: #fff; --accent-shadow: #555; --ambient: #141414; --pattern: #0e0e0e;
+      --focus-ring: #fff3; --shadow-color: #0008;
+    }
+    :root[data-theme="white"] {
+      color-scheme: light;
+      --bg: #f1f4ef; --panel: #fff; --panel-bg: #fffffff2; --panel-raised: #e8eee7;
+      --line: #cbd5ca; --strong-line: #aebbad; --subtle-line: #c5d0c4;
+      --text: #202a21; --field-text: #1c271e; --soft-text: #334136; --muted: #647264;
+      --lime: #4d7938; --mint: #258263; --orange: #b96432; --red: #b94945;
+      --surface: #edf2eb; --control: #f6f8f4; --editor: #fff; --accent-ink: #fff;
+      --accent-outline: #dbe8d5; --accent-shadow: #8ba17d; --ambient: #e4ece0; --pattern: #e1e8df;
+      --focus-ring: #4d793833; --shadow-color: #26332222;
     }
     * { box-sizing: border-box; }
     body {
@@ -30,102 +75,132 @@
       margin: 0;
       color: var(--text);
       background-color: var(--bg);
-      background-image: radial-gradient(ellipse at 10% 0%, #28352a 0, transparent 38%), linear-gradient(135deg, transparent 74%, #18221a 74%, #18221a 75%, transparent 75%);
+      background-image: radial-gradient(ellipse at 10% 0%, var(--ambient) 0, transparent 38%), linear-gradient(135deg, transparent 74%, var(--pattern) 74%, var(--pattern) 75%, transparent 75%);
       background-size: auto, 32px 32px;
       font: 15px/1.5 var(--sans);
     }
     button, input, textarea, select { font: inherit; }
     button { color: inherit; }
     .app { max-width: 1440px; min-height: 100vh; margin: auto; padding: 24px 32px 40px; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid #435044; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .topbar-actions { display: flex; align-items: center; gap: 18px; }
+    .theme-control { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 10px var(--mono); }
+    .theme-select { width: 146px !important; min-width: 0; height: 34px !important; }
+    .preview-head-actions { display: flex; align-items: center; gap: 9px; }
+    .preview-panel.is-expanded { position: fixed; z-index: 100; inset: 16px; width: auto; max-width: 1200px; height: fit-content; max-height: calc(100vh - 32px); margin: auto; overflow: auto; background: var(--panel-bg); box-shadow: 0 0 0 100vmax #000d, 0 20px 80px #000; }
+    .preview-panel.is-expanded .preview-stage { width: min(100%, 160vh); margin: 0 auto; }
     .brand { display: flex; align-items: center; gap: 13px; }
-    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; color: #101511; background: var(--lime); border: 3px solid #efffc8; box-shadow: 4px 4px 0 #51613b; font: 700 17px var(--mono); }
+    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; color: var(--accent-ink); background: var(--lime); border: 3px solid var(--accent-outline); box-shadow: 4px 4px 0 var(--accent-shadow); font: 700 17px var(--mono); }
     .brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0; }
     .brand-sub { margin-top: -3px; color: var(--muted); font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-    .edition { display: flex; align-items: center; gap: 9px; color: #c5d0c3; font: 11px var(--mono); text-transform: uppercase; }
+    .edition { display: flex; align-items: center; gap: 9px; color: var(--soft-text); font: 11px var(--mono); text-transform: uppercase; }
     .edition::before { width: 7px; height: 7px; content: ""; background: var(--mint); box-shadow: 0 0 12px #66d9a277; }
     .intro { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 30px 0 25px; }
     h1 { margin: 0; font-size: clamp(26px, 4vw, 38px); line-height: 1.08; letter-spacing: 0; }
     .intro p { max-width: 540px; margin: 10px 0 0; color: var(--muted); font-size: 14px; }
-    .intro-tag { flex: 0 0 auto; padding: 8px 11px; color: var(--lime); border: 1px solid #52623f; background: #20291e; font: 11px var(--mono); }
+    .intro-tag { flex: 0 0 auto; padding: 8px 11px; color: var(--lime); border: 1px solid var(--line); background: var(--surface); font: 11px var(--mono); }
     .workspace { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: 18px; align-items: start; }
     .column { min-width: 0; display: grid; gap: 16px; }
-    .panel { min-width: 0; overflow: hidden; border: 1px solid var(--line); background: #171e19f2; box-shadow: 0 14px 40px #0003; }
-    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 17px; border-bottom: 1px solid var(--line); background: #1c251e; }
+    .panel { min-width: 0; overflow: hidden; border: 1px solid var(--line); background: var(--panel-bg); box-shadow: 0 14px 40px var(--shadow-color); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 17px; border-bottom: 1px solid var(--line); background: var(--panel-raised); }
     .panel-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
-    .step { display: grid; width: 22px; height: 22px; place-items: center; color: var(--lime); border: 1px solid #4a5b39; font: 11px var(--mono); }
+    .step { display: grid; width: 22px; height: 22px; place-items: center; color: var(--lime); border: 1px solid var(--line); font: 11px var(--mono); }
     .panel-kicker { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
     .panel-body { padding: 17px; }
-    .field-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: #d9e2d8; font-size: 12px; font-weight: 600; }
+    .field-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: var(--soft-text); font-size: 12px; font-weight: 600; }
     .subtle { color: var(--muted); font: 10px var(--mono); }
     .text-wrap { position: relative; }
     textarea {
       display: block; width: 100%; min-height: 132px; resize: vertical; padding: 14px 15px;
-      color: #f2f4ec; border: 1px solid #48564a; border-radius: 2px; outline: none; background: #101511;
+      color: var(--field-text); border: 1px solid var(--strong-line); border-radius: 2px; outline: none; background: var(--editor);
       font: 14px/1.8 var(--mono); tab-size: 2;
     }
-    textarea:focus, input:focus, select:focus { border-color: var(--lime); outline: 2px solid #c4f26630; outline-offset: 1px; }
+    textarea:focus, input:focus, select:focus { border-color: var(--lime); outline: 2px solid var(--focus-ring); outline-offset: 1px; }
     .format-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding-top: 12px; }
     .toolbar-label { margin-right: 3px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
-    .tool-button { min-width: 34px; height: 32px; padding: 0 9px; color: #d9e2d8; border: 1px solid #3a483d; border-radius: 2px; background: #202a22; cursor: pointer; }
-    .tool-button:hover, .tool-button[aria-pressed="true"] { color: #101511; border-color: var(--lime); background: var(--lime); }
+    .tool-button { min-width: 34px; height: 32px; padding: 0 9px; color: var(--soft-text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--surface); cursor: pointer; }
+    .tool-button:hover, .tool-button[aria-pressed="true"] { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); }
     .tool-button b { font-size: 15px; }
     .hint { margin: 11px 0 0; color: var(--muted); font-size: 11px; }
-    .field-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-top: 18px; }
-    .input-shell { display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 5px 9px; border: 1px solid #3a483d; background: #111712; }
+    .color-selection { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding: 9px; border: 1px solid var(--subtle-line); background: var(--control); }
+    .color-selection .toolbar-label { margin-right: auto; }
+    .color-swatch-trigger { width: 34px; height: 34px; padding: 4px; border: 1px solid var(--strong-line); border-radius: 2px; background: var(--surface); cursor: pointer; }
+    .color-swatch-trigger span { display: block; width: 100%; height: 100%; border: 1px solid #ffffff66; background: var(--swatch-color); }
+    .gradient-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; color: var(--soft-text); font-size: 12px; font-weight: 600; }
+    .gradient-actions { display: flex; align-items: center; gap: 8px; }
+    .gradient-stops { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+    .gradient-stop { display: flex; align-items: center; gap: 6px; min-height: 39px; padding: 4px 7px; border: 1px solid var(--subtle-line); background: var(--control); }
+    .gradient-stop-label { color: var(--muted); font: 10px var(--mono); }
+    .gradient-stop-color { width: 27px; height: 27px; padding: 3px; border: 1px solid var(--strong-line); border-radius: 2px; background: var(--surface); cursor: pointer; }
+    .gradient-stop-color span { display: block; width: 100%; height: 100%; border: 1px solid #ffffff66; background: var(--swatch-color); }
+    .stop-remove { display: grid; width: 25px; height: 27px; place-items: center; color: var(--soft-text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--surface); font: 15px var(--mono); cursor: pointer; }
+    .stop-remove:hover:not(:disabled) { color: var(--accent-ink); border-color: var(--red); background: var(--red); }
+    .stop-remove:disabled { opacity: .38; cursor: not-allowed; }
+    .color-picker { position: fixed; z-index: 10; width: 244px; padding: 12px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 12px 35px var(--shadow-color); }
+    .color-picker-area { position: relative; height: 112px; overflow: hidden; border: 1px solid #ffffff50; background-color: hsl(var(--picker-hue, 45deg) 100% 50%); background-image: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent); cursor: crosshair; touch-action: none; }
+    .color-picker-cursor { position: absolute; width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 0 1px #111; transform: translate(-50%, -50%); pointer-events: none; }
+    .color-picker-hue { display: block; width: 100%; height: 14px; margin: 12px 0; appearance: none; border: 1px solid #ffffff55; border-radius: 0; background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); cursor: pointer; }
+    .color-picker-hue::-webkit-slider-thumb { width: 10px; height: 20px; appearance: none; border: 2px solid white; border-radius: 2px; background: transparent; box-shadow: 0 0 0 1px #111; }
+    .color-picker-hue::-moz-range-thumb { width: 7px; height: 17px; border: 2px solid white; border-radius: 2px; background: transparent; box-shadow: 0 0 0 1px #111; }
+    .color-picker-tools { display: flex; gap: 7px; }
+    .color-picker-tools input { flex: 1; min-width: 0; height: 34px; padding: 0 9px; color: var(--text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--editor); font: 11px var(--mono); text-transform: uppercase; }
+    .color-picker-tools button { min-width: 35px; height: 34px; color: var(--soft-text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--surface); cursor: pointer; }
+    .color-picker-tools button:hover { border-color: var(--lime); }
+    .picker-swatches { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 10px; }
+    .picker-swatch { width: 100%; aspect-ratio: 1; padding: 0; border: 1px solid #ffffff55; border-radius: 2px; cursor: pointer; }
+    .picker-swatch:hover { outline: 2px solid white; outline-offset: 1px; }
     input[type="color"] { width: 27px; height: 27px; padding: 0; border: 0; background: transparent; cursor: pointer; }
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
     input[type="color"]::-webkit-color-swatch { border: 1px solid #ffffff55; }
-    .hex-value { color: #dce5dc; font: 11px var(--mono); }
-    .gradient-switch { display: flex; align-items: center; gap: 8px; color: #dce5dc; font-size: 11px; cursor: pointer; }
+    .hex-value { color: var(--soft-text); font: 11px var(--mono); }
+    .gradient-switch { display: flex; align-items: center; gap: 8px; color: var(--soft-text); font-size: 11px; cursor: pointer; }
     .gradient-switch input { accent-color: var(--lime); }
     .presets { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
-    .preset { display: flex; align-items: center; gap: 7px; padding: 6px 9px; color: #c8d1c7; border: 1px solid #3b483d; border-radius: 2px; background: #1b241d; font: 10px var(--mono); cursor: pointer; }
+    .preset { display: flex; align-items: center; gap: 7px; padding: 6px 9px; color: var(--soft-text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--surface); font: 10px var(--mono); cursor: pointer; }
     .preset:hover { border-color: #87977d; background: #263128; }
     .swatch { width: 28px; height: 10px; border: 1px solid #ffffff40; }
     .compat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 17px; padding-top: 16px; border-top: 1px solid #303b32; }
     .schema-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
     [hidden] { display: none !important; }
-    select, .number-input { width: 100%; height: 39px; padding: 0 10px; color: var(--text); border: 1px solid #3a483d; border-radius: 2px; background: #111712; font: 11px var(--mono); }
+    select, .number-input { width: 100%; height: 39px; padding: 0 10px; color: var(--text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--control); font: 11px var(--mono); }
     .number-input { padding-right: 8px; }
     .symbols-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
-    .search { width: 145px; height: 31px; padding: 0 9px; color: var(--text); border: 1px solid #3a483d; border-radius: 2px; background: #111712; font: 10px var(--mono); }
+    .search { width: 145px; height: 31px; padding: 0 9px; color: var(--text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--control); font: 10px var(--mono); }
     .symbol-grid { display: grid; grid-template-columns: repeat(10, minmax(28px, 1fr)); gap: 5px; }
-    .symbol { display: grid; min-width: 0; aspect-ratio: 1; place-items: center; color: #e2ebdf; border: 1px solid #364238; border-radius: 2px; background: #202a22; font-size: 18px; cursor: pointer; transition: background .15s, transform .15s; }
-    .symbol:hover { color: #111712; border-color: var(--lime); background: var(--lime); transform: translateY(-2px); }
+    .symbol { display: grid; min-width: 0; aspect-ratio: 1; place-items: center; color: var(--text); border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font-size: 18px; cursor: pointer; transition: background .15s, transform .15s; }
+    .symbol:hover { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); transform: translateY(-2px); }
     .symbol-empty { grid-column: 1 / -1; padding: 14px 0; color: var(--muted); text-align: center; font-size: 12px; }
-    .preview-stage { position: relative; min-height: 222px; display: grid; place-items: center; padding: 28px 20px; overflow: hidden; background-color: #252d28; background-image: linear-gradient(45deg, #ffffff08 25%, transparent 25%, transparent 75%, #ffffff08 75%), linear-gradient(45deg, #ffffff08 25%, transparent 25%, transparent 75%, #ffffff08 75%); background-position: 0 0, 12px 12px; background-size: 24px 24px; }
-    .preview-stage::before { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, #10151120, #10151177); pointer-events: none; }
-    .game-window { position: relative; width: min(100%, 440px); padding: 15px; border: 2px solid #777b73; background: #222521; box-shadow: 0 10px 30px #0008, inset 0 0 0 2px #181a18; }
-    .game-title { margin: 0 0 13px; color: #f5f5f5; text-align: center; text-shadow: 2px 2px #383838; font: 700 12px var(--mono); }
-    .pack-row { display: grid; grid-template-columns: 48px 1fr 28px; align-items: center; gap: 12px; min-height: 69px; padding: 9px; border: 2px solid #d0d0d0; background: #555b53; box-shadow: inset 2px 2px #858a81, inset -2px -2px #363b35; }
-    .pack-icon { position: relative; width: 44px; height: 44px; overflow: hidden; image-rendering: pixelated; border: 2px solid #adb7a6; background: linear-gradient(135deg, transparent 0 48%, #202922 49% 53%, transparent 54%), linear-gradient(45deg, #4d7844 0 25%, #6d9953 25% 50%, #315d3c 50% 75%, #a1b963 75%); background-size: 12px 12px, 24px 24px; box-shadow: 2px 2px #263126; }
-    .pack-name { overflow: hidden; color: #fff; text-overflow: ellipsis; text-shadow: 1px 1px #303030; white-space: nowrap; font: 11px var(--mono); }
-    .pack-description { min-height: 17px; overflow-wrap: anywhere; color: #ddd; text-shadow: 1px 1px #333; font: 11px/1.6 "Lucida Console", var(--mono); }
-    .pack-arrow { color: #e6e9e2; font: 20px var(--mono); text-align: center; text-shadow: 1px 1px #333; }
-    .game-buttons { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
-    .game-button { flex: 1; padding: 7px 3px; color: #f1f1f1; border: 2px solid #d6d6d6; background: #555b53; box-shadow: inset 2px 2px #858a81, inset -2px -2px #343a34; text-align: center; text-shadow: 1px 1px #303030; font: 9px var(--mono); }
+    .preview-stage { position: relative; width: 100%; overflow: hidden; aspect-ratio: 854 / 480; background: #181818; cursor: zoom-in; }
+    .preview-stage.is-expanded { position: fixed; z-index: 100; top: 50%; left: 50%; width: min(94vw, 160vh); margin: 0; transform: translate(-50%, -50%); border: 1px solid var(--line); box-shadow: 0 0 0 100vmax #000d, 0 20px 80px #000; cursor: zoom-out; }
+    body.preview-open { overflow: hidden; }
+    .preview-expand { display: grid; width: 30px; height: 30px; place-items: center; color: var(--soft-text); border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font: 17px var(--mono); cursor: pointer; }
+    .preview-expand:hover { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); }
+    .minecraft-screen { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .minecraft-pack-preview { position: absolute; top: 24%; left: 63%; width: 33%; height: 24%; overflow: hidden; padding: 1px 2px; background: #171917; color: #f4f4f4; text-shadow: 1px 1px #303030; }
+    .minecraft-pack-name { overflow: hidden; height: 34%; margin-bottom: 1px; color: #fff; text-overflow: ellipsis; white-space: nowrap; font: 10px/1.1 "Lucida Console", var(--mono); }
+    .minecraft-pack-preview .pack-description { height: 64%; overflow: hidden; color: #ddd; overflow-wrap: anywhere; white-space: pre-wrap; font: 8px/1.15 "Lucida Console", var(--mono); }
     .preview-note { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; color: var(--muted); border-top: 1px solid var(--line); font-size: 10px; }
     .preview-note strong { color: var(--mint); font: 10px var(--mono); }
-    .tabs { display: flex; align-items: center; gap: 3px; padding: 0 14px; border-bottom: 1px solid var(--line); background: #1c251e; }
+    .preview-note a { color: var(--soft-text); text-decoration-color: var(--muted); text-underline-offset: 3px; }
+    .tabs { display: flex; align-items: center; gap: 3px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--panel-raised); }
     .tab { padding: 11px 10px 9px; color: var(--muted); border: 0; border-bottom: 2px solid transparent; background: transparent; font: 10px var(--mono); cursor: pointer; }
     .tab[aria-selected="true"] { color: var(--lime); border-bottom-color: var(--lime); }
     .json-wrap { position: relative; }
-    pre { min-height: 150px; max-height: 250px; overflow: auto; margin: 0; padding: 15px 16px; color: #c4d0c3; background: #101511; font: 11px/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+    pre { min-height: 150px; max-height: 250px; overflow: auto; margin: 0; padding: 15px 16px; color: var(--soft-text); background: var(--editor); font: 11px/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
     .json-key { color: #92c8a6; }
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; border-top: 1px solid #303b32; }
-    .action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 37px; padding: 0 12px; border: 1px solid #53634a; border-radius: 2px; background: #202a22; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); }
+    .action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 37px; padding: 0 12px; color: var(--text); border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font-size: 11px; font-weight: 700; cursor: pointer; }
     .action:hover { border-color: var(--lime); background: #293528; }
-    .action.primary { color: #141b12; border-color: var(--lime); background: var(--lime); }
+    .action.primary { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); }
     .action.primary:hover { background: #d7ff8e; }
     .action-icon { font: 13px var(--mono); }
-    .footer { display: flex; justify-content: space-between; gap: 12px; padding: 20px 2px 0; color: #7f8b80; font: 10px var(--mono); }
-    .footer a { color: #a8b7a6; text-decoration-color: #647261; text-underline-offset: 3px; }
-    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 3; padding: 11px 15px; color: #122014; background: var(--lime); border: 2px solid #efffc8; box-shadow: 4px 4px #51613b; font: 11px var(--mono); opacity: 0; transform: translateY(12px); transition: .2s; pointer-events: none; }
+    .footer { display: flex; justify-content: space-between; gap: 12px; padding: 20px 2px 0; color: var(--muted); font: 10px var(--mono); }
+    .footer a { color: var(--soft-text); text-decoration-color: var(--muted); text-underline-offset: 3px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 110; padding: 11px 15px; color: var(--accent-ink); background: var(--lime); border: 2px solid var(--accent-outline); box-shadow: 4px 4px var(--accent-shadow); font: 11px var(--mono); opacity: 0; transform: translateY(12px); transition: .2s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
     @media (max-width: 900px) { .app { padding: 19px 20px 32px; } .workspace { grid-template-columns: minmax(0, 1fr) minmax(320px, .86fr); gap: 12px; } .panel-body { padding: 14px; } .symbol-grid { grid-template-columns: repeat(8, minmax(27px, 1fr)); } }
-    @media (max-width: 720px) { .app { padding: 14px 14px 28px; } .topbar { padding-bottom: 16px; } .intro { align-items: start; padding: 23px 0 18px; } .intro-tag { display: none; } .workspace { grid-template-columns: 1fr; } .column { gap: 13px; } .workspace > .column:last-child { grid-row: 1; } .preview-stage { min-height: 205px; } .preview-panel .panel-head { padding: 11px 14px; } .symbol-grid { grid-template-columns: repeat(10, minmax(26px, 1fr)); } .footer { flex-direction: column; } }
-    @media (max-width: 420px) { .edition { font-size: 9px; } .brand-mark { width: 36px; height: 36px; } .brand-name { font-size: 16px; } .field-grid { grid-template-columns: 1fr; } .compat-row { grid-template-columns: 1fr; } .search { width: 120px; } .symbol-grid { grid-template-columns: repeat(8, minmax(26px, 1fr)); } .panel-head { padding-right: 12px; padding-left: 12px; } }
+    @media (max-width: 720px) { .app { padding: 14px 14px 28px; } .topbar { flex-wrap: wrap; padding-bottom: 16px; } .topbar-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .intro { align-items: start; padding: 23px 0 18px; } .intro-tag { display: none; } .workspace { grid-template-columns: 1fr; } .column { gap: 13px; } .workspace > .column:last-child { grid-row: 1; } .minecraft-pack-name { font-size: 8px; } .minecraft-pack-preview .pack-description { font-size: 6px; } .preview-panel .panel-head { padding: 11px 14px; } .symbol-grid { grid-template-columns: repeat(10, minmax(26px, 1fr)); } .footer { flex-direction: column; } }
+    @media (max-width: 420px) { .edition { font-size: 9px; } .theme-control { width: 100%; justify-content: space-between; } .theme-select { width: 156px !important; } .brand-mark { width: 36px; height: 36px; } .brand-name { font-size: 16px; } .field-grid { grid-template-columns: 1fr; } .compat-row { grid-template-columns: 1fr; } .search { width: 120px; } .symbol-grid { grid-template-columns: repeat(8, minmax(26px, 1fr)); } .panel-head { padding-right: 12px; padding-left: 12px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
@@ -133,7 +208,10 @@
   <main class="app">
     <header class="topbar">
       <div class="brand"><div class="brand-mark" aria-hidden="true">P_</div><div><div class="brand-name">packtext</div><div class="brand-sub">resource pack editor</div></div></div>
-      <div class="edition">Java Edition <span>·</span> pack.mcmeta</div>
+      <div class="topbar-actions">
+        <label class="theme-control" for="theme-select"><span>Тема</span><select id="theme-select" class="theme-select" aria-label="Тема сайта"><option value="default">По умолчанию</option><option value="dark-blue">Тёмно-синяя</option><option value="black">Чёрная</option><option value="white">Белая</option></select></label>
+        <div class="edition">Java Edition <span>·</span> pack.mcmeta</div>
+      </div>
     </header>
     <section class="intro">
       <div><h1>Текст, который<br>видно в игре.</h1><p>Собери описание ресурс-пака, примерь градиент и забери готовый файл метаданных.</p></div>
@@ -145,8 +223,8 @@
           <div class="panel-head"><div class="panel-title"><span class="step">01</span> Текст описания</div><span class="panel-kicker" id="char-count">0 символов</span></div>
           <div class="panel-body">
             <label class="field-label" for="description">Описание, которое увидят игроки <span class="subtle">Enter — новая строка</span></label>
-            <div class="text-wrap"><textarea id="description" maxlength="500" spellcheck="false" aria-label="Описание ресурс-пака">НОВЫЙ РЕСУРС-ПАК
-для твоего мира</textarea></div>
+            <div class="text-wrap"><textarea id="description" maxlength="500" spellcheck="false" aria-label="Описание ресурс-пака">Напиши сюда свой текст
+для твоей mcmeta</textarea></div>
             <div class="format-toolbar" aria-label="Форматирование текста">
               <span class="toolbar-label">Стиль</span>
               <button class="tool-button style-button" type="button" data-style="bold" aria-label="Жирный" aria-pressed="false"><b>B</b></button>
@@ -158,12 +236,14 @@
               <button class="tool-button case-button" type="button" data-case="upper" aria-label="В заглавные буквы" title="В заглавные">AA</button>
               <button class="tool-button case-button" type="button" data-case="small-caps" aria-label="Преобразовать в Small Capital" title="Small Capital">ᴬᴀ</button>
             </div>
-            <p class="hint">Регистр и Small Capital меняют выделение или весь текст. Стиль применяется ко всему описанию.</p>
-            <div class="field-grid">
-              <div><div class="field-label"><label for="color-start">Цвет начала</label><span class="hex-value" id="start-value">#C4F266</span></div><div class="input-shell"><input id="color-start" type="color" value="#c4f266" aria-label="Начальный цвет"><span class="hex-value">первый оттенок</span></div></div>
-              <div><div class="field-label"><label for="color-mid">Цвет середины</label><span class="hex-value" id="mid-value">#8DE18E</span></div><div class="input-shell"><input id="color-mid" type="color" value="#8de18e" aria-label="Средний цвет градиента"><span class="hex-value">средний оттенок</span></div></div>
-              <div id="end-color-field"><div class="field-label"><label for="color-end">Цвет конца</label><span class="hex-value" id="end-value">#66D9A2</span></div><div class="input-shell"><input id="color-end" type="color" value="#66d9a2" aria-label="Конечный цвет"><span class="hex-value">последний оттенок</span></div></div>
+            <div class="color-selection">
+              <span class="toolbar-label">Цвет выделения</span>
+              <button class="color-swatch-trigger" id="selected-color" type="button" aria-label="Цвет выделенного текста" aria-haspopup="dialog" aria-expanded="false" style="--swatch-color:#ffbf40"><span></span></button>
+              <button class="action" id="apply-selected-color" type="button"><span class="action-icon" aria-hidden="true">●</span> Применить</button>
+              <button class="tool-button" id="clear-selected-color" type="button" aria-label="Сбросить цвет выделения" title="Сбросить цвет">×</button>
             </div>
+            <div class="gradient-heading"><span>Цвета градиента</span><div class="gradient-actions"><span class="subtle" id="gradient-count">3 точки</span><button class="tool-button" id="add-gradient-stop" type="button" aria-label="Добавить цвет градиента" title="Добавить цвет">+</button></div></div>
+            <div class="gradient-stops" id="gradient-stops" aria-label="Точки градиента"></div>
             <div class="presets" aria-label="Готовые градиенты">
               <button class="preset" type="button" data-start="#C4F266" data-mid="#8DE18E" data-end="#66D9A2"><span class="swatch" style="background:linear-gradient(90deg,#c4f266,#8de18e,#66d9a2)"></span>мох</button>
               <button class="preset" type="button" data-start="#FFB86B" data-mid="#FF8790" data-end="#B576EB"><span class="swatch" style="background:linear-gradient(90deg,#ffb86b,#ff8790,#b576eb)"></span>закат</button>
@@ -192,16 +272,16 @@
         </section>
       </div>
       <div class="column">
-        <section class="panel preview-panel">
-          <div class="panel-head"><div class="panel-title"><span class="step">03</span> Как это выглядит</div><span class="panel-kicker">Предпросмотр</span></div>
+        <section class="panel preview-panel" id="preview-panel">
+          <div class="panel-head"><div class="panel-title"><span class="step">03</span> Как это выглядит</div><div class="preview-head-actions"><span class="panel-kicker">Предпросмотр</span><button class="preview-expand" id="preview-expand" type="button" aria-label="Увеличить превью" aria-pressed="false" title="Увеличить превью">⛶</button></div></div>
           <div class="preview-stage">
-            <div class="game-window">
-              <p class="game-title">Выбор ресурсов</p>
-              <div class="pack-row"><div class="pack-icon" aria-hidden="true"></div><div><div class="pack-name">Новый ресурс-пак</div><div class="pack-description" id="preview-text"></div></div><div class="pack-arrow" aria-hidden="true">›</div></div>
-              <div class="game-buttons"><div class="game-button">Готово</div><div class="game-button">Открыть папку</div></div>
+            <img class="minecraft-screen" src="https://minecraft.wiki/images/Select_Resource_Packs.png?9961c&amp;format=original" alt="Снимок настоящего меню выбора ресурс-паков Minecraft Java Edition">
+            <div class="minecraft-pack-preview" aria-label="Живое превью пакета">
+              <div class="minecraft-pack-name">MyPack</div>
+              <div class="pack-description" id="preview-text"></div>
             </div>
           </div>
-          <div class="preview-note"><span>Вид списка ресурс-паков · приближенный шрифт</span><strong>LIVE</strong></div>
+          <div class="preview-note"><span>Живое описание · экран Minecraft Java</span><a href="https://minecraft.wiki/w/File:Select_Resource_Packs.png" target="_blank" rel="noreferrer">Источник ↗</a><strong>LIVE</strong></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div class="panel-title"><span class="step">04</span> pack.mcmeta</div><span class="panel-kicker" id="json-status">JSON · готов</span></div>
@@ -213,13 +293,26 @@
     </section>
     <footer class="footer"><span>Сборка происходит в браузере. Текст никуда не отправляется.</span><a href="https://minecraft.wiki/w/Pack.mcmeta" target="_blank" rel="noreferrer">Формат pack.mcmeta ↗</a></footer>
   </main>
+  <div class="color-picker" id="color-picker" role="dialog" aria-label="Выбор цвета" hidden>
+    <div class="color-picker-area" id="color-picker-area" aria-label="Выбор оттенка и яркости"><div class="color-picker-cursor" id="color-picker-cursor"></div></div>
+    <input class="color-picker-hue" id="color-picker-hue" type="range" min="0" max="359" value="45" aria-label="Оттенок цвета">
+    <div class="color-picker-tools"><input id="color-picker-hex" type="text" value="#FFBF40" maxlength="7" spellcheck="false" aria-label="HEX-код цвета"><button id="color-picker-eyedropper" type="button" title="Взять цвет с экрана" aria-label="Взять цвет с экрана">⌖</button></div>
+    <div class="picker-swatches" id="picker-swatches" aria-label="Быстрые цвета"></div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script>
     (() => {
       const description = document.querySelector('#description');
-      const startPicker = document.querySelector('#color-start');
-      const middlePicker = document.querySelector('#color-mid');
-      const endPicker = document.querySelector('#color-end');
+      const selectedColorTrigger = document.querySelector('#selected-color');
+      const colorPicker = document.querySelector('#color-picker');
+      const colorPickerArea = document.querySelector('#color-picker-area');
+      const colorPickerCursor = document.querySelector('#color-picker-cursor');
+      const colorPickerHueInput = document.querySelector('#color-picker-hue');
+      const colorPickerHexInput = document.querySelector('#color-picker-hex');
+      const colorPickerSwatches = document.querySelector('#picker-swatches');
+      const colorPickerEyedropper = document.querySelector('#color-picker-eyedropper');
+      const gradientStopsElement = document.querySelector('#gradient-stops');
+      const addGradientStopButton = document.querySelector('#add-gradient-stop');
       const gradientToggle = document.querySelector('#gradient-enabled');
       const formatMode = document.querySelector('#format-mode');
       const minecraftVersion = document.querySelector('#minecraft-version');
@@ -227,6 +320,9 @@
       const output = document.querySelector('#output');
       const symbolGrid = document.querySelector('#symbol-grid');
       const toast = document.querySelector('#toast');
+      const themeSelect = document.querySelector('#theme-select');
+      const previewPanel = document.querySelector('#preview-panel');
+      const previewExpandButton = document.querySelector('#preview-expand');
       const styles = { bold: false, italic: false, underlined: false, strikethrough: false };
       const symbols = [
         ['Звезды', '★ ☆ ✦ ✧ ✩ ✪ ✫ ✬ ✭ ✮ ✯ ✰ ⋆ ✵ ✶ ✷ ✸ ✹ ✺ ✻ ✼ ✽ ✾ ✿'],
@@ -258,22 +354,242 @@
       ];
       let activeTab = 'json';
       let toastTimer;
+      let gradientStops = ['#c4f266', '#8de18e', '#66d9a2'];
+      let selectedColorValue = '#ffbf40';
+      let activeColorTrigger = null;
+      let activeColorChange = null;
+      let pickerHue = 45;
+      let pickerSaturation = 0.75;
+      let pickerValue = 1;
 
       const graphemes = value => Array.from(value);
+      let trackedText = description.value;
+      let characterColors = Array(graphemes(trackedText).length).fill(null);
       const toRgb = hex => [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16));
       const toHex = rgb => '#' + rgb.map(value => Math.round(value).toString(16).padStart(2, '0')).join('');
       const mix = (left, right, amount) => left.map((value, index) => value + (right[index] - value) * amount);
       const rgbDistance = (left, right) => left.reduce((sum, value, index) => sum + (value - right[index]) ** 2, 0);
-      const colorAt = (index, length) => {
-        if (!gradientToggle.checked || length < 2) return startPicker.value;
-        const position = index / (length - 1);
-        const colors = [startPicker.value, middlePicker.value, endPicker.value].map(toRgb);
-        const segment = position <= 0.5 ? 0 : 1;
-        const amount = position <= 0.5 ? position * 2 : (position - 0.5) * 2;
-        return toHex(mix(colors[segment], colors[segment + 1], amount));
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+      const rgbToHsv = hex => {
+        const [red, green, blue] = toRgb(hex).map(value => value / 255);
+        const maximum = Math.max(red, green, blue);
+        const minimum = Math.min(red, green, blue);
+        const delta = maximum - minimum;
+        let hue = 0;
+        if (delta) {
+          if (maximum === red) hue = 60 * (((green - blue) / delta) % 6);
+          else if (maximum === green) hue = 60 * ((blue - red) / delta + 2);
+          else hue = 60 * ((red - green) / delta + 4);
+        }
+        return { hue: (hue + 360) % 360, saturation: maximum === 0 ? 0 : delta / maximum, value: maximum };
       };
+      const hsvToHex = (hue, saturation, value) => {
+        const chroma = value * saturation;
+        const section = hue / 60;
+        const intermediate = chroma * (1 - Math.abs(section % 2 - 1));
+        const rgb = section < 1 ? [chroma, intermediate, 0]
+          : section < 2 ? [intermediate, chroma, 0]
+            : section < 3 ? [0, chroma, intermediate]
+              : section < 4 ? [0, intermediate, chroma]
+                : section < 5 ? [intermediate, 0, chroma]
+                  : [chroma, 0, intermediate];
+        const offset = value - chroma;
+        return toHex(rgb.map(channel => (channel + offset) * 255));
+      };
+      const gradientColorAt = (index, length) => {
+        if (!gradientToggle.checked || length < 2) return gradientStops[0];
+        const position = index / (length - 1) * (gradientStops.length - 1);
+        const segment = Math.min(Math.floor(position), gradientStops.length - 2);
+        return toHex(mix(toRgb(gradientStops[segment]), toRgb(gradientStops[segment + 1]), position - segment));
+      };
+      const colorAt = (index, length) => characterColors[index] || gradientColorAt(index, length);
       const activeStyles = () => Object.fromEntries(Object.entries(styles).filter(([, enabled]) => enabled));
       const safeColor = color => /^#[0-9a-f]{6}$/i.test(color) ? color : '#ffffff';
+
+      function syncCharacterColors() {
+        const previousChars = graphemes(trackedText);
+        const nextText = description.value;
+        const nextChars = graphemes(nextText);
+        let prefix = 0;
+        while (prefix < previousChars.length && prefix < nextChars.length && previousChars[prefix] === nextChars[prefix]) prefix++;
+        let suffix = 0;
+        while (suffix < previousChars.length - prefix && suffix < nextChars.length - prefix && previousChars[previousChars.length - 1 - suffix] === nextChars[nextChars.length - 1 - suffix]) suffix++;
+        characterColors = [
+          ...characterColors.slice(0, prefix),
+          ...Array(nextChars.length - prefix - suffix).fill(null),
+          ...characterColors.slice(previousChars.length - suffix)
+        ];
+        trackedText = nextText;
+      }
+
+      function codePointOffset(value, offset) {
+        return graphemes(value.slice(0, offset)).length;
+      }
+
+      function applyColorToSelection() {
+        const selectionStart = description.selectionStart;
+        const selectionEnd = description.selectionEnd;
+        if (selectionStart === selectionEnd) {
+          notify('Сначала выдели слово или фразу');
+          description.focus();
+          return;
+        }
+        const start = codePointOffset(description.value, selectionStart);
+        const end = codePointOffset(description.value, selectionEnd);
+        for (let index = start; index < end; index++) characterColors[index] = selectedColorValue.toUpperCase();
+        renderPreview();
+        notify('Цвет применён к выделению');
+        description.focus();
+      }
+
+      function clearColorFromSelection() {
+        const selectionStart = description.selectionStart;
+        const selectionEnd = description.selectionEnd;
+        if (selectionStart === selectionEnd) {
+          characterColors.fill(null);
+        } else {
+          const start = codePointOffset(description.value, selectionStart);
+          const end = codePointOffset(description.value, selectionEnd);
+          for (let index = start; index < end; index++) characterColors[index] = null;
+        }
+        renderPreview();
+        notify('Цвет выделения сброшен');
+        description.focus();
+      }
+
+      function setColorPickerValue(color) {
+        const hsv = rgbToHsv(color);
+        pickerHue = hsv.hue;
+        pickerSaturation = hsv.saturation;
+        pickerValue = hsv.value;
+        colorPickerHueInput.value = String(Math.round(pickerHue));
+        colorPickerHexInput.value = color.toUpperCase();
+        colorPickerArea.style.setProperty('--picker-hue', `${pickerHue}deg`);
+        colorPickerCursor.style.left = `${pickerSaturation * 100}%`;
+        colorPickerCursor.style.top = `${(1 - pickerValue) * 100}%`;
+        activeColorChange?.(color.toUpperCase());
+      }
+
+      function positionColorPicker(trigger) {
+        const bounds = trigger.getBoundingClientRect();
+        const panel = colorPicker.getBoundingClientRect();
+        const left = clamp(bounds.left, 8, window.innerWidth - panel.width - 8);
+        const below = bounds.bottom + panel.height + 8 <= window.innerHeight;
+        const top = below ? bounds.bottom + 8 : Math.max(8, bounds.top - panel.height - 8);
+        colorPicker.style.left = `${left}px`;
+        colorPicker.style.top = `${top}px`;
+      }
+
+      function openColorPicker(trigger, initialColor, onChange) {
+        if (activeColorTrigger === trigger && !colorPicker.hidden) {
+          closeColorPicker();
+          return;
+        }
+        closeColorPicker();
+        activeColorTrigger = trigger;
+        activeColorChange = onChange;
+        trigger.setAttribute('aria-expanded', 'true');
+        colorPicker.hidden = false;
+        setColorPickerValue(initialColor);
+        positionColorPicker(trigger);
+        colorPickerHexInput.focus();
+        colorPickerHexInput.select();
+      }
+
+      function closeColorPicker(restoreFocus = false) {
+        if (activeColorTrigger) activeColorTrigger.setAttribute('aria-expanded', 'false');
+        const trigger = activeColorTrigger;
+        colorPicker.hidden = true;
+        activeColorTrigger = null;
+        activeColorChange = null;
+        if (restoreFocus) trigger?.focus();
+      }
+
+      function applyTheme(theme) {
+        const availableThemes = ['default', 'dark-blue', 'black', 'white'];
+        const selectedTheme = availableThemes.includes(theme) ? theme : 'default';
+        document.documentElement.dataset.theme = selectedTheme;
+        themeSelect.value = selectedTheme;
+        document.querySelector('meta[name="theme-color"]').content = {
+          default: '#101511',
+          'dark-blue': '#09111d',
+          black: '#050505',
+          white: '#f1f4ef'
+        }[selectedTheme];
+        try {
+          localStorage.setItem('packtext-theme', selectedTheme);
+        } catch {}
+      }
+
+      function setPreviewExpanded(expanded) {
+        previewPanel.classList.toggle('is-expanded', expanded);
+        document.body.classList.toggle('preview-open', expanded);
+        previewExpandButton.setAttribute('aria-pressed', String(expanded));
+        previewExpandButton.setAttribute('aria-label', expanded ? 'Свернуть превью' : 'Увеличить превью');
+        previewExpandButton.title = expanded ? 'Свернуть превью' : 'Увеличить превью';
+        previewExpandButton.textContent = expanded ? '×' : '⛶';
+      }
+
+      function updateColorPickerFromHex(color) {
+        if (!/^#[0-9a-f]{6}$/i.test(color)) return;
+        setColorPickerValue(color);
+      }
+
+      function renderPickerSwatches() {
+        const colors = ['#FFBF40', '#F7D154', '#F45CC7', '#4E7CF6', '#4BE889', '#FF5C57', '#F28C45', '#F3EEEA', '#101511', '#AA00AA', '#55FFFF', '#FFFFFF', '#C4F266', '#66D9A2', '#69C7FF', '#A88BFF'];
+        colorPickerSwatches.replaceChildren();
+        colors.forEach(color => {
+          const swatch = document.createElement('button');
+          swatch.className = 'picker-swatch';
+          swatch.type = 'button';
+          swatch.style.backgroundColor = color;
+          swatch.setAttribute('aria-label', `Выбрать цвет ${color}`);
+          swatch.addEventListener('click', () => setColorPickerValue(color));
+          colorPickerSwatches.append(swatch);
+        });
+      }
+
+      function renderGradientStops() {
+        gradientStopsElement.replaceChildren();
+        gradientStops.forEach((color, index) => {
+          const stop = document.createElement('div');
+          stop.className = 'gradient-stop';
+          const label = document.createElement('span');
+          label.className = 'gradient-stop-label';
+          label.textContent = `Цвет ${index + 1}`;
+          const picker = document.createElement('button');
+          picker.className = 'gradient-stop-color';
+          picker.type = 'button';
+          picker.style.setProperty('--swatch-color', color);
+          picker.setAttribute('aria-label', `Цвет градиента ${index + 1}`);
+          picker.setAttribute('aria-haspopup', 'dialog');
+          picker.setAttribute('aria-expanded', 'false');
+          const colorPreview = document.createElement('span');
+          picker.append(colorPreview);
+          picker.addEventListener('click', () => openColorPicker(picker, gradientStops[index], updatedColor => {
+            gradientStops[index] = updatedColor.toLowerCase();
+            picker.style.setProperty('--swatch-color', updatedColor);
+            renderPreview();
+          }));
+          const remove = document.createElement('button');
+          remove.className = 'stop-remove';
+          remove.type = 'button';
+          remove.textContent = '−';
+          remove.disabled = gradientStops.length <= 2;
+          remove.setAttribute('aria-label', `Удалить цвет градиента ${index + 1}`);
+          remove.addEventListener('click', () => {
+            if (gradientStops.length <= 2) return;
+            gradientStops.splice(index, 1);
+            renderGradientStops();
+            renderPreview();
+          });
+          stop.append(label, picker, remove);
+          gradientStopsElement.append(stop);
+        });
+        const count = gradientStops.length;
+        document.querySelector('#gradient-count').textContent = `${count} ${count === 2 ? 'цвета' : 'цветов'}`;
+        addGradientStopButton.disabled = count >= 8;
+      }
 
       function buildComponent() {
         const chars = graphemes(description.value);
@@ -324,10 +640,6 @@
           preview.append(span);
         });
         document.querySelector('#char-count').textContent = `${chars.length} символ${chars.length % 10 === 1 && chars.length % 100 !== 11 ? '' : chars.length % 10 >= 2 && chars.length % 10 <= 4 && (chars.length % 100 < 12 || chars.length % 100 > 14) ? 'а' : 'ов'}`;
-        document.querySelector('#start-value').textContent = startPicker.value.toUpperCase();
-        document.querySelector('#mid-value').textContent = middlePicker.value.toUpperCase();
-        document.querySelector('#end-value').textContent = endPicker.value.toUpperCase();
-        document.querySelector('#end-color-field').style.opacity = gradientToggle.checked ? '1' : '.42';
         const format = minecraftVersions[minecraftVersion.value];
         const colorHint = formatMode.value === 'legacy'
           ? 'Цвета заменяются ближайшими из 16 кодов §.'
@@ -429,10 +741,9 @@
       }));
       document.querySelectorAll('.case-button').forEach(button => button.addEventListener('click', () => changeCase(button.dataset.case)));
       document.querySelectorAll('.preset').forEach(button => button.addEventListener('click', () => {
-        startPicker.value = button.dataset.start;
-        middlePicker.value = button.dataset.mid;
-        endPicker.value = button.dataset.end;
+        gradientStops = [button.dataset.start, button.dataset.mid, button.dataset.end];
         gradientToggle.checked = true;
+        renderGradientStops();
         renderPreview();
       }));
       document.querySelectorAll('.tab').forEach(button => button.addEventListener('click', () => {
@@ -440,10 +751,75 @@
         document.querySelectorAll('.tab').forEach(tab => tab.setAttribute('aria-selected', String(tab === button)));
         renderPreview();
       }));
-      [description, startPicker, middlePicker, endPicker, gradientToggle, formatMode, minecraftVersion].forEach(element => element.addEventListener('input', renderPreview));
+      description.addEventListener('input', () => {
+        syncCharacterColors();
+        renderPreview();
+      });
+      [gradientToggle, formatMode, minecraftVersion].forEach(element => element.addEventListener('input', renderPreview));
+      document.querySelector('#apply-selected-color').addEventListener('click', applyColorToSelection);
+      document.querySelector('#clear-selected-color').addEventListener('click', clearColorFromSelection);
+      selectedColorTrigger.addEventListener('click', () => openColorPicker(selectedColorTrigger, selectedColorValue, updatedColor => {
+        selectedColorValue = updatedColor.toLowerCase();
+        selectedColorTrigger.style.setProperty('--swatch-color', updatedColor);
+      }));
+      addGradientStopButton.addEventListener('click', () => {
+        if (gradientStops.length >= 8) return;
+        gradientStops.push(selectedColorValue);
+        renderGradientStops();
+        renderPreview();
+      });
+      colorPickerHueInput.addEventListener('input', () => {
+        pickerHue = Number(colorPickerHueInput.value);
+        setColorPickerValue(hsvToHex(pickerHue, pickerSaturation, pickerValue));
+      });
+      colorPickerArea.addEventListener('pointerdown', event => {
+        colorPickerArea.setPointerCapture(event.pointerId);
+        const bounds = colorPickerArea.getBoundingClientRect();
+        pickerSaturation = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+        pickerValue = 1 - clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
+        setColorPickerValue(hsvToHex(pickerHue, pickerSaturation, pickerValue));
+      });
+      colorPickerArea.addEventListener('pointermove', event => {
+        if (!colorPickerArea.hasPointerCapture(event.pointerId)) return;
+        const bounds = colorPickerArea.getBoundingClientRect();
+        pickerSaturation = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+        pickerValue = 1 - clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
+        setColorPickerValue(hsvToHex(pickerHue, pickerSaturation, pickerValue));
+      });
+      colorPickerHexInput.addEventListener('input', () => updateColorPickerFromHex(colorPickerHexInput.value));
+      colorPickerHexInput.addEventListener('blur', () => {
+        if (!/^#[0-9a-f]{6}$/i.test(colorPickerHexInput.value)) colorPickerHexInput.value = hsvToHex(pickerHue, pickerSaturation, pickerValue).toUpperCase();
+      });
+      document.addEventListener('pointerdown', event => {
+        if (!colorPicker.hidden && !colorPicker.contains(event.target) && !activeColorTrigger?.contains(event.target)) closeColorPicker();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !colorPicker.hidden) closeColorPicker(true);
+        if (event.key === 'Escape' && previewPanel.classList.contains('is-expanded')) setPreviewExpanded(false);
+      });
+      themeSelect.addEventListener('change', () => applyTheme(themeSelect.value));
+      previewExpandButton.addEventListener('click', () => setPreviewExpanded(!previewPanel.classList.contains('is-expanded')));
+      try {
+        applyTheme(localStorage.getItem('packtext-theme') || 'default');
+      } catch {
+        applyTheme('default');
+      }
+      window.addEventListener('resize', () => {
+        if (!colorPicker.hidden && activeColorTrigger) positionColorPicker(activeColorTrigger);
+      });
+      colorPickerEyedropper.hidden = !('EyeDropper' in window);
+      colorPickerEyedropper.addEventListener('click', async () => {
+        try {
+          const picker = new EyeDropper();
+          const result = await picker.open();
+          setColorPickerValue(result.sRGBHex);
+        } catch {}
+      });
       document.querySelector('#symbol-search').addEventListener('input', renderSymbols);
       document.querySelector('#copy').addEventListener('click', copyOutput);
       document.querySelector('#download').addEventListener('click', downloadFile);
+      renderPickerSwatches();
+      renderGradientStops();
       renderSymbols();
       renderPreview();
     })();
