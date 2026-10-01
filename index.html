@@ -170,15 +170,25 @@
     .symbol { display: grid; min-width: 0; aspect-ratio: 1; place-items: center; color: var(--text); border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font-size: 18px; cursor: pointer; transition: background .15s, transform .15s; }
     .symbol:hover { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); transform: translateY(-2px); }
     .symbol-empty { grid-column: 1 / -1; padding: 14px 0; color: var(--muted); text-align: center; font-size: 12px; }
-    .preview-stage { position: relative; width: 100%; overflow: hidden; aspect-ratio: 854 / 480; background: #181818; cursor: zoom-in; }
+    .preview-stage { display: grid; width: 100%; min-height: 220px; place-items: center; overflow: hidden; padding: 18px; aspect-ratio: 854 / 300; background: radial-gradient(ellipse at 50% 10%, #28352a, #121713 72%); cursor: zoom-in; }
     .preview-stage.is-expanded { position: fixed; z-index: 100; top: 50%; left: 50%; width: min(94vw, 160vh); margin: 0; transform: translate(-50%, -50%); border: 1px solid var(--line); box-shadow: 0 0 0 100vmax #000d, 0 20px 80px #000; cursor: zoom-out; }
     body.preview-open { overflow: hidden; }
     .preview-expand { display: grid; width: 30px; height: 30px; place-items: center; color: var(--soft-text); border: 1px solid var(--line); border-radius: 2px; background: var(--surface); font: 17px var(--mono); cursor: pointer; }
     .preview-expand:hover { color: var(--accent-ink); border-color: var(--lime); background: var(--lime); }
-    .minecraft-screen { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .minecraft-pack-preview { position: absolute; top: 24%; left: 63%; width: 33%; height: 24%; overflow: hidden; padding: 1px 2px; background: #171917; color: #f4f4f4; text-shadow: 1px 1px #303030; }
-    .minecraft-pack-name { overflow: hidden; height: 34%; margin-bottom: 1px; color: #fff; text-overflow: ellipsis; white-space: nowrap; font: 10px/1.1 "Lucida Console", var(--mono); }
-    .minecraft-pack-preview .pack-description { height: 64%; overflow: hidden; color: #ddd; overflow-wrap: anywhere; white-space: pre-wrap; font: 8px/1.15 "Lucida Console", var(--mono); }
+    .pack-list-preview { width: min(100%, 620px); }
+    .pack-list-heading { margin-bottom: 10px; color: #f4f4f4; text-align: center; text-shadow: 2px 2px #303030; font: 700 14px "Lucida Console", var(--mono); text-decoration: underline; text-underline-offset: 4px; }
+    .pack-row-preview { display: grid; grid-template-columns: 64px minmax(0, 1fr) 28px; align-items: center; gap: 12px; min-height: 84px; padding: 8px; border: 2px solid #d0d0d0; background: #555b53; box-shadow: inset 2px 2px #858a81, inset -2px -2px #363b35; }
+    .pack-icon-button { display: grid; width: 64px; height: 64px; place-items: center; overflow: hidden; padding: 0; border: 2px solid #b8bdb5; background: #222; image-rendering: pixelated; cursor: pointer; }
+    .pack-icon-button img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+    .pack-icon-button:hover { border-color: #fff; }
+    .pack-copy { min-width: 0; align-self: stretch; overflow: hidden; text-shadow: 1px 1px #303030; }
+    .pack-title-preview { display: block; width: 100%; height: 24px; overflow: hidden; color: #fff; text-shadow: inherit; white-space: pre; font: 14px/1.5 "Lucida Console", var(--mono); }
+    .pack-name-controls { display: grid; grid-template-columns: auto minmax(100px, 1fr); align-items: center; gap: 8px 12px; padding: 10px 14px; border-top: 1px solid var(--line); }
+    .pack-name-controls label { color: var(--soft-text); font-size: 11px; font-weight: 600; }
+    .pack-name-input { width: 100%; min-width: 0; height: 32px; padding: 0 9px; color: var(--text); border: 1px solid var(--subtle-line); border-radius: 2px; background: var(--control); font: 11px var(--mono); }
+    .pack-name-note { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 10px; }
+    .pack-preview-description { max-height: 45px; overflow: hidden; color: #ddd; overflow-wrap: anywhere; white-space: pre-wrap; font: 10px/1.35 "Lucida Console", var(--mono); }
+    .pack-preview-arrow { color: #f2f2f2; text-align: center; text-shadow: 1px 1px #303030; font: 24px var(--mono); }
     .preview-note { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; color: var(--muted); border-top: 1px solid var(--line); font-size: 10px; }
     .preview-note strong { color: var(--mint); font: 10px var(--mono); }
     .preview-note a { color: var(--soft-text); text-decoration-color: var(--muted); text-underline-offset: 3px; }
@@ -199,7 +209,7 @@
     .toast { position: fixed; right: 22px; bottom: 22px; z-index: 110; padding: 11px 15px; color: var(--accent-ink); background: var(--lime); border: 2px solid var(--accent-outline); box-shadow: 4px 4px var(--accent-shadow); font: 11px var(--mono); opacity: 0; transform: translateY(12px); transition: .2s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateY(0); }
     @media (max-width: 900px) { .app { padding: 19px 20px 32px; } .workspace { grid-template-columns: minmax(0, 1fr) minmax(320px, .86fr); gap: 12px; } .panel-body { padding: 14px; } .symbol-grid { grid-template-columns: repeat(8, minmax(27px, 1fr)); } }
-    @media (max-width: 720px) { .app { padding: 14px 14px 28px; } .topbar { flex-wrap: wrap; padding-bottom: 16px; } .topbar-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .intro { align-items: start; padding: 23px 0 18px; } .intro-tag { display: none; } .workspace { grid-template-columns: 1fr; } .column { gap: 13px; } .workspace > .column:last-child { grid-row: 1; } .minecraft-pack-name { font-size: 8px; } .minecraft-pack-preview .pack-description { font-size: 6px; } .preview-panel .panel-head { padding: 11px 14px; } .symbol-grid { grid-template-columns: repeat(10, minmax(26px, 1fr)); } .footer { flex-direction: column; } }
+    @media (max-width: 720px) { .app { padding: 14px 14px 28px; } .topbar { flex-wrap: wrap; padding-bottom: 16px; } .topbar-actions { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; } .intro { align-items: start; padding: 23px 0 18px; } .intro-tag { display: none; } .workspace { grid-template-columns: 1fr; } .column { gap: 13px; } .workspace > .column:last-child { grid-row: 1; } .pack-row-preview { grid-template-columns: 56px minmax(0,1fr) 24px; gap: 9px; } .pack-icon-button { width: 56px; height: 56px; } .pack-preview-description { font-size: 9px; } .preview-panel .panel-head { padding: 11px 14px; } .symbol-grid { grid-template-columns: repeat(10, minmax(26px, 1fr)); } .footer { flex-direction: column; } }
     @media (max-width: 420px) { .edition { font-size: 9px; } .theme-control { width: 100%; justify-content: space-between; } .theme-select { width: 156px !important; } .brand-mark { width: 36px; height: 36px; } .brand-name { font-size: 16px; } .field-grid { grid-template-columns: 1fr; } .compat-row { grid-template-columns: 1fr; } .search { width: 120px; } .symbol-grid { grid-template-columns: repeat(8, minmax(26px, 1fr)); } .panel-head { padding-right: 12px; padding-left: 12px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
@@ -275,13 +285,18 @@
         <section class="panel preview-panel" id="preview-panel">
           <div class="panel-head"><div class="panel-title"><span class="step">03</span> Как это выглядит</div><div class="preview-head-actions"><span class="panel-kicker">Предпросмотр</span><button class="preview-expand" id="preview-expand" type="button" aria-label="Увеличить превью" aria-pressed="false" title="Увеличить превью">⛶</button></div></div>
           <div class="preview-stage">
-            <img class="minecraft-screen" src="https://minecraft.wiki/images/Select_Resource_Packs.png?9961c&amp;format=original" alt="Снимок настоящего меню выбора ресурс-паков Minecraft Java Edition">
-            <div class="minecraft-pack-preview" aria-label="Живое превью пакета">
-              <div class="minecraft-pack-name">MyPack</div>
-              <div class="pack-description" id="preview-text"></div>
+            <div class="pack-list-preview">
+              <div class="pack-list-heading">Selected</div>
+              <div class="pack-row-preview">
+                <button class="pack-icon-button" id="pack-icon-button" type="button" aria-label="Загрузить свой pack.png" title="Загрузить свой pack.png"><img id="pack-icon-preview" src="https://minecraft.wiki/images/Default_pack.png?b4e99&amp;format=original" alt="Иконка ресурс-пака"></button>
+                <div class="pack-copy"><div class="pack-title-preview" id="preview-pack-name" aria-label="Цветное имя ресурс-пака"></div><div class="pack-preview-description" id="preview-text"></div></div>
+                <span class="pack-preview-arrow" aria-hidden="true">›</span>
+              </div>
             </div>
+            <div class="pack-name-controls"><label for="pack-name">Имя пака</label><input class="pack-name-input" id="pack-name" type="text" value="MyPack" maxlength="40" aria-label="Имя ресурс-пака"><p class="pack-name-note">Цвет отображается в превью; в pack.mcmeta имя задаётся папкой или ZIP-архивом.</p></div>
+            <input id="pack-icon-file" type="file" accept="image/png" hidden>
           </div>
-          <div class="preview-note"><span>Живое описание · экран Minecraft Java</span><a href="https://minecraft.wiki/w/File:Select_Resource_Packs.png" target="_blank" rel="noreferrer">Источник ↗</a><strong>LIVE</strong></div>
+          <div class="preview-note"><span>Строка Selected · имя и pack.png можно менять</span><a href="https://minecraft.wiki/w/File:Default_pack.png" target="_blank" rel="noreferrer">Иконка Minecraft ↗</a><strong>LIVE</strong></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div class="panel-title"><span class="step">04</span> pack.mcmeta</div><span class="panel-kicker" id="json-status">JSON · готов</span></div>
@@ -317,12 +332,17 @@
       const formatMode = document.querySelector('#format-mode');
       const minecraftVersion = document.querySelector('#minecraft-version');
       const preview = document.querySelector('#preview-text');
+      const previewPackName = document.querySelector('#preview-pack-name');
       const output = document.querySelector('#output');
       const symbolGrid = document.querySelector('#symbol-grid');
       const toast = document.querySelector('#toast');
       const themeSelect = document.querySelector('#theme-select');
       const previewPanel = document.querySelector('#preview-panel');
       const previewExpandButton = document.querySelector('#preview-expand');
+      const packNameInput = document.querySelector('#pack-name');
+      const packIconButton = document.querySelector('#pack-icon-button');
+      const packIconFile = document.querySelector('#pack-icon-file');
+      const packIconPreview = document.querySelector('#pack-icon-preview');
       const styles = { bold: false, italic: false, underlined: false, strikethrough: false };
       const symbols = [
         ['Звезды', '★ ☆ ✦ ✧ ✩ ✪ ✫ ✬ ✭ ✮ ✯ ✰ ⋆ ✵ ✶ ✷ ✸ ✹ ✺ ✻ ✼ ✽ ✾ ✿'],
@@ -361,10 +381,14 @@
       let pickerHue = 45;
       let pickerSaturation = 0.75;
       let pickerValue = 1;
+      let uploadedIconUrl = null;
 
       const graphemes = value => Array.from(value);
       let trackedText = description.value;
       let characterColors = Array(graphemes(trackedText).length).fill(null);
+      let trackedPackName = packNameInput.value;
+      let packNameColors = Array(graphemes(trackedPackName).length).fill(null);
+      let activeTextTarget = description;
       const toRgb = hex => [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16));
       const toHex = rgb => '#' + rgb.map(value => Math.round(value).toString(16).padStart(2, '0')).join('');
       const mix = (left, right, amount) => left.map((value, index) => value + (right[index] - value) * amount);
@@ -402,59 +426,86 @@
         const segment = Math.min(Math.floor(position), gradientStops.length - 2);
         return toHex(mix(toRgb(gradientStops[segment]), toRgb(gradientStops[segment + 1]), position - segment));
       };
-      const colorAt = (index, length) => characterColors[index] || gradientColorAt(index, length);
+      const colorAt = (index, length, colors = characterColors) => colors[index] || gradientColorAt(index, length);
       const activeStyles = () => Object.fromEntries(Object.entries(styles).filter(([, enabled]) => enabled));
       const safeColor = color => /^#[0-9a-f]{6}$/i.test(color) ? color : '#ffffff';
 
-      function syncCharacterColors() {
-        const previousChars = graphemes(trackedText);
-        const nextText = description.value;
+      function remapCharacterColors(previousText, nextText, colors) {
+        const previousChars = graphemes(previousText);
         const nextChars = graphemes(nextText);
         let prefix = 0;
         while (prefix < previousChars.length && prefix < nextChars.length && previousChars[prefix] === nextChars[prefix]) prefix++;
         let suffix = 0;
         while (suffix < previousChars.length - prefix && suffix < nextChars.length - prefix && previousChars[previousChars.length - 1 - suffix] === nextChars[nextChars.length - 1 - suffix]) suffix++;
-        characterColors = [
-          ...characterColors.slice(0, prefix),
+        return [
+          ...colors.slice(0, prefix),
           ...Array(nextChars.length - prefix - suffix).fill(null),
-          ...characterColors.slice(previousChars.length - suffix)
+          ...colors.slice(previousChars.length - suffix)
         ];
-        trackedText = nextText;
+      }
+
+      function syncCharacterColors() {
+        characterColors = remapCharacterColors(trackedText, description.value, characterColors);
+        trackedText = description.value;
+      }
+
+      function syncPackNameColors() {
+        packNameColors = remapCharacterColors(trackedPackName, packNameInput.value, packNameColors);
+        trackedPackName = packNameInput.value;
+      }
+
+      function renderPackName() {
+        const chars = graphemes(packNameInput.value);
+        previewPackName.replaceChildren();
+        chars.forEach((character, index) => {
+          const span = document.createElement('span');
+          span.textContent = character;
+          span.style.color = packNameColors[index] || '#ffffff';
+          previewPackName.append(span);
+        });
+      }
+
+      function applyColorToSelection() {
+        const target = activeTextTarget;
+        const targetText = target.value;
+        const targetColors = target === packNameInput ? packNameColors : characterColors;
+        const selectionStart = target.selectionStart;
+        const selectionEnd = target.selectionEnd;
+        if (selectionStart === selectionEnd) {
+          notify('Сначала выдели часть имени или описания');
+          target.focus();
+          return;
+        }
+        const start = codePointOffset(targetText, selectionStart);
+        const end = codePointOffset(targetText, selectionEnd);
+        for (let index = start; index < end; index++) targetColors[index] = selectedColorValue.toUpperCase();
+        renderPreview();
+        closeColorPicker();
+        notify('Цвет применён к выделению');
+        target.focus();
+      }
+
+      function clearColorFromSelection() {
+        const target = activeTextTarget;
+        const targetText = target.value;
+        const targetColors = target === packNameInput ? packNameColors : characterColors;
+        const selectionStart = target.selectionStart;
+        const selectionEnd = target.selectionEnd;
+        if (selectionStart === selectionEnd) {
+          targetColors.fill(null);
+        } else {
+          const start = codePointOffset(targetText, selectionStart);
+          const end = codePointOffset(targetText, selectionEnd);
+          for (let index = start; index < end; index++) targetColors[index] = null;
+        }
+        renderPreview();
+        closeColorPicker();
+        notify('Цвет выделения сброшен');
+        target.focus();
       }
 
       function codePointOffset(value, offset) {
         return graphemes(value.slice(0, offset)).length;
-      }
-
-      function applyColorToSelection() {
-        const selectionStart = description.selectionStart;
-        const selectionEnd = description.selectionEnd;
-        if (selectionStart === selectionEnd) {
-          notify('Сначала выдели слово или фразу');
-          description.focus();
-          return;
-        }
-        const start = codePointOffset(description.value, selectionStart);
-        const end = codePointOffset(description.value, selectionEnd);
-        for (let index = start; index < end; index++) characterColors[index] = selectedColorValue.toUpperCase();
-        renderPreview();
-        notify('Цвет применён к выделению');
-        description.focus();
-      }
-
-      function clearColorFromSelection() {
-        const selectionStart = description.selectionStart;
-        const selectionEnd = description.selectionEnd;
-        if (selectionStart === selectionEnd) {
-          characterColors.fill(null);
-        } else {
-          const start = codePointOffset(description.value, selectionStart);
-          const end = codePointOffset(description.value, selectionEnd);
-          for (let index = start; index < end; index++) characterColors[index] = null;
-        }
-        renderPreview();
-        notify('Цвет выделения сброшен');
-        description.focus();
       }
 
       function setColorPickerValue(color) {
@@ -624,6 +675,7 @@
       }
 
       function renderPreview() {
+        renderPackName();
         const chars = graphemes(description.value);
         preview.replaceChildren();
         chars.forEach((character, index) => {
@@ -755,9 +807,23 @@
         syncCharacterColors();
         renderPreview();
       });
+      description.addEventListener('focus', () => { activeTextTarget = description; });
+      packNameInput.addEventListener('focus', () => { activeTextTarget = packNameInput; });
+      packNameInput.addEventListener('input', () => {
+        syncPackNameColors();
+        renderPreview();
+      });
       [gradientToggle, formatMode, minecraftVersion].forEach(element => element.addEventListener('input', renderPreview));
       document.querySelector('#apply-selected-color').addEventListener('click', applyColorToSelection);
       document.querySelector('#clear-selected-color').addEventListener('click', clearColorFromSelection);
+      packIconButton.addEventListener('click', () => packIconFile.click());
+      packIconFile.addEventListener('change', () => {
+        const file = packIconFile.files[0];
+        if (!file || file.type !== 'image/png') return;
+        if (uploadedIconUrl) URL.revokeObjectURL(uploadedIconUrl);
+        uploadedIconUrl = URL.createObjectURL(file);
+        packIconPreview.src = uploadedIconUrl;
+      });
       selectedColorTrigger.addEventListener('click', () => openColorPicker(selectedColorTrigger, selectedColorValue, updatedColor => {
         selectedColorValue = updatedColor.toLowerCase();
         selectedColorTrigger.style.setProperty('--swatch-color', updatedColor);
