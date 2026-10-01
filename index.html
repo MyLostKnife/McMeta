@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101511">
+  <title>Packtext — редактор pack.mcmeta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101511;
+      --panel: #171e19;
+      --panel-raised: #1d261f;
+      --line: #344137;
+      --text: #edf2e9;
+      --muted: #9aa69b;
+      --lime: #c4f266;
+      --mint: #66d9a2;
+      --orange: #f2a76b;
+      --red: #ff8878;
+      --mono: "DM Mono", Consolas, monospace;
+      --sans: "Space Grotesk", "Trebuchet MS", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image: radial-gradient(ellipse at 10% 0%, #28352a 0, transparent 38%), linear-gradient(135deg, transparent 74%, #18221a 74%, #18221a 75%, transparent 75%);
+      background-size: auto, 32px 32px;
+      font: 15px/1.5 var(--sans);
+    }
+    button, input, textarea, select { font: inherit; }
+    button { color: inherit; }
+    .app { max-width: 1440px; min-height: 100vh; margin: auto; padding: 24px 32px 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid #435044; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark { display: grid; width: 42px; height: 42px; place-items: center; color: #101511; background: var(--lime); border: 3px solid #efffc8; box-shadow: 4px 4px 0 #51613b; font: 700 17px var(--mono); }
+    .brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0; }
+    .brand-sub { margin-top: -3px; color: var(--muted); font: 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+    .edition { display: flex; align-items: center; gap: 9px; color: #c5d0c3; font: 11px var(--mono); text-transform: uppercase; }
+    .edition::before { width: 7px; height: 7px; content: ""; background: var(--mint); box-shadow: 0 0 12px #66d9a277; }
+    .intro { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 30px 0 25px; }
+    h1 { margin: 0; font-size: clamp(26px, 4vw, 38px); line-height: 1.08; letter-spacing: 0; }
+    .intro p { max-width: 540px; margin: 10px 0 0; color: var(--muted); font-size: 14px; }
+    .intro-tag { flex: 0 0 auto; padding: 8px 11px; color: var(--lime); border: 1px solid #52623f; background: #20291e; font: 11px var(--mono); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(360px, .92fr); gap: 18px; align-items: start; }
+    .column { min-width: 0; display: grid; gap: 16px; }
+    .panel { min-width: 0; overflow: hidden; border: 1px solid var(--line); background: #171e19f2; box-shadow: 0 14px 40px #0003; }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 17px; border-bottom: 1px solid var(--line); background: #1c251e; }
+    .panel-title { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; }
+    .step { display: grid; width: 22px; height: 22px; place-items: center; color: var(--lime); border: 1px solid #4a5b39; font: 11px var(--mono); }
+    .panel-kicker { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    .panel-body { padding: 17px; }
+    .field-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: #d9e2d8; font-size: 12px; font-weight: 600; }
+    .subtle { color: var(--muted); font: 10px var(--mono); }
+    .text-wrap { position: relative; }
+    textarea {
+      display: block; width: 100%; min-height: 132px; resize: vertical; padding: 14px 15px;
+      color: #f2f4ec; border: 1px solid #48564a; border-radius: 2px; outline: none; background: #101511;
+      font: 14px/1.8 var(--mono); tab-size: 2;
+    }
+    textarea:focus, input:focus, select:focus { border-color: var(--lime); outline: 2px solid #c4f26630; outline-offset: 1px; }
+    .format-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding-top: 12px; }
+    .toolbar-label { margin-right: 3px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    .tool-button { min-width: 34px; height: 32px; padding: 0 9px; color: #d9e2d8; border: 1px solid #3a483d; border-radius: 2px; background: #202a22; cursor: pointer; }
+    .tool-button:hover, .tool-button[aria-pressed="true"] { color: #101511; border-color: var(--lime); background: var(--lime); }
+    .tool-button b { font-size: 15px; }
+    .hint { margin: 11px 0 0; color: var(--muted); font-size: 11px; }
+    .field-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin-top: 18px; }
+    .input-shell { display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 5px 9px; border: 1px solid #3a483d; background: #111712; }
+    input[type="color"] { width: 27px; height: 27px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 1px solid #ffffff55; }
+    .hex-value { color: #dce5dc; font: 11px var(--mono); }
+    .gradient-switch { display: flex; align-items: center; gap: 8px; color: #dce5dc; font-size: 11px; cursor: pointer; }
+    .gradient-switch input { accent-color: var(--lime); }
+    .presets { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .preset { display: flex; align-items: center; gap: 7px; padding: 6px 9px; color: #c8d1c7; border: 1px solid #3b483d; border-radius: 2px; background: #1b241d; font: 10px var(--mono); cursor: pointer; }
+    .preset:hover { border-color: #87977d; background: #263128; }
+    .swatch { width: 28px; height: 10px; border: 1px solid #ffffff40; }
+    .compat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 17px; padding-top: 16px; border-top: 1px solid #303b32; }
+    .schema-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    [hidden] { display: none !important; }
+    select, .number-input { width: 100%; height: 39px; padding: 0 10px; color: var(--text); border: 1px solid #3a483d; border-radius: 2px; background: #111712; font: 11px var(--mono); }
+    .number-input { padding-right: 8px; }
+    .symbols-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
+    .search { width: 145px; height: 31px; padding: 0 9px; color: var(--text); border: 1px solid #3a483d; border-radius: 2px; background: #111712; font: 10px var(--mono); }
+    .symbol-grid { display: grid; grid-template-columns: repeat(10, minmax(28px, 1fr)); gap: 5px; }
+    .symbol { display: grid; min-width: 0; aspect-ratio: 1; place-items: center; color: #e2ebdf; border: 1px solid #364238; border-radius: 2px; background: #202a22; font-size: 18px; cursor: pointer; transition: background .15s, transform .15s; }
+    .symbol:hover { color: #111712; border-color: var(--lime); background: var(--lime); transform: translateY(-2px); }
+    .symbol-empty { grid-column: 1 / -1; padding: 14px 0; color: var(--muted); text-align: center; font-size: 12px; }
+    .preview-stage { position: relative; min-height: 222px; display: grid; place-items: center; padding: 28px 20px; overflow: hidden; background-color: #252d28; background-image: linear-gradient(45deg, #ffffff08 25%, transparent 25%, transparent 75%, #ffffff08 75%), linear-gradient(45deg, #ffffff08 25%, transparent 25%, transparent 75%, #ffffff08 75%); background-position: 0 0, 12px 12px; background-size: 24px 24px; }
+    .preview-stage::before { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, #10151120, #10151177); pointer-events: none; }
+    .game-window { position: relative; width: min(100%, 440px); padding: 15px; border: 2px solid #777b73; background: #222521; box-shadow: 0 10px 30px #0008, inset 0 0 0 2px #181a18; }
+    .game-title { margin: 0 0 13px; color: #f5f5f5; text-align: center; text-shadow: 2px 2px #383838; font: 700 12px var(--mono); }
+    .pack-row { display: grid; grid-template-columns: 48px 1fr 28px; align-items: center; gap: 12px; min-height: 69px; padding: 9px; border: 2px solid #d0d0d0; background: #555b53; box-shadow: inset 2px 2px #858a81, inset -2px -2px #363b35; }
+    .pack-icon { position: relative; width: 44px; height: 44px; overflow: hidden; image-rendering: pixelated; border: 2px solid #adb7a6; background: linear-gradient(135deg, transparent 0 48%, #202922 49% 53%, transparent 54%), linear-gradient(45deg, #4d7844 0 25%, #6d9953 25% 50%, #315d3c 50% 75%, #a1b963 75%); background-size: 12px 12px, 24px 24px; box-shadow: 2px 2px #263126; }
+    .pack-name { overflow: hidden; color: #fff; text-overflow: ellipsis; text-shadow: 1px 1px #303030; white-space: nowrap; font: 11px var(--mono); }
+    .pack-description { min-height: 17px; overflow-wrap: anywhere; color: #ddd; text-shadow: 1px 1px #333; font: 11px/1.6 "Lucida Console", var(--mono); }
+    .pack-arrow { color: #e6e9e2; font: 20px var(--mono); text-align: center; text-shadow: 1px 1px #333; }
+    .game-buttons { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
+    .game-button { flex: 1; padding: 7px 3px; color: #f1f1f1; border: 2px solid #d6d6d6; background: #555b53; box-shadow: inset 2px 2px #858a81, inset -2px -2px #343a34; text-align: center; text-shadow: 1px 1px #303030; font: 9px var(--mono); }
+    .preview-note { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; color: var(--muted); border-top: 1px solid var(--line); font-size: 10px; }
+    .preview-note strong { color: var(--mint); font: 10px var(--mono); }
+    .tabs { display: flex; align-items: center; gap: 3px; padding: 0 14px; border-bottom: 1px solid var(--line); background: #1c251e; }
+    .tab { padding: 11px 10px 9px; color: var(--muted); border: 0; border-bottom: 2px solid transparent; background: transparent; font: 10px var(--mono); cursor: pointer; }
+    .tab[aria-selected="true"] { color: var(--lime); border-bottom-color: var(--lime); }
+    .json-wrap { position: relative; }
+    pre { min-height: 150px; max-height: 250px; overflow: auto; margin: 0; padding: 15px 16px; color: #c4d0c3; background: #101511; font: 11px/1.7 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .json-key { color: #92c8a6; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 14px; border-top: 1px solid #303b32; }
+    .action { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 37px; padding: 0 12px; border: 1px solid #53634a; border-radius: 2px; background: #202a22; font-size: 11px; font-weight: 700; cursor: pointer; }
+    .action:hover { border-color: var(--lime); background: #293528; }
+    .action.primary { color: #141b12; border-color: var(--lime); background: var(--lime); }
+    .action.primary:hover { background: #d7ff8e; }
+    .action-icon { font: 13px var(--mono); }
+    .footer { display: flex; justify-content: space-between; gap: 12px; padding: 20px 2px 0; color: #7f8b80; font: 10px var(--mono); }
+    .footer a { color: #a8b7a6; text-decoration-color: #647261; text-underline-offset: 3px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 3; padding: 11px 15px; color: #122014; background: var(--lime); border: 2px solid #efffc8; box-shadow: 4px 4px #51613b; font: 11px var(--mono); opacity: 0; transform: translateY(12px); transition: .2s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 900px) { .app { padding: 19px 20px 32px; } .workspace { grid-template-columns: minmax(0, 1fr) minmax(320px, .86fr); gap: 12px; } .panel-body { padding: 14px; } .symbol-grid { grid-template-columns: repeat(8, minmax(27px, 1fr)); } }
+    @media (max-width: 720px) { .app { padding: 14px 14px 28px; } .topbar { padding-bottom: 16px; } .intro { align-items: start; padding: 23px 0 18px; } .intro-tag { display: none; } .workspace { grid-template-columns: 1fr; } .column { gap: 13px; } .workspace > .column:last-child { grid-row: 1; } .preview-stage { min-height: 205px; } .preview-panel .panel-head { padding: 11px 14px; } .symbol-grid { grid-template-columns: repeat(10, minmax(26px, 1fr)); } .footer { flex-direction: column; } }
+    @media (max-width: 420px) { .edition { font-size: 9px; } .brand-mark { width: 36px; height: 36px; } .brand-name { font-size: 16px; } .field-grid { grid-template-columns: 1fr; } .compat-row { grid-template-columns: 1fr; } .search { width: 120px; } .symbol-grid { grid-template-columns: repeat(8, minmax(26px, 1fr)); } .panel-head { padding-right: 12px; padding-left: 12px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true">P_</div><div><div class="brand-name">packtext</div><div class="brand-sub">resource pack editor</div></div></div>
+      <div class="edition">Java Edition <span>·</span> pack.mcmeta</div>
+    </header>
+    <section class="intro">
+      <div><h1>Текст, который<br>видно в игре.</h1><p>Собери описание ресурс-пака, примерь градиент и забери готовый файл метаданных.</p></div>
+      <div class="intro-tag">01 / ОПИСАНИЕ ПАКА</div>
+    </section>
+    <section class="workspace" aria-label="Редактор описания ресурс-пака">
+      <div class="column">
+        <section class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="step">01</span> Текст описания</div><span class="panel-kicker" id="char-count">0 символов</span></div>
+          <div class="panel-body">
+            <label class="field-label" for="description">Описание, которое увидят игроки <span class="subtle">Enter — новая строка</span></label>
+            <div class="text-wrap"><textarea id="description" maxlength="500" spellcheck="false" aria-label="Описание ресурс-пака">НОВЫЙ РЕСУРС-ПАК
+для твоего мира</textarea></div>
+            <div class="format-toolbar" aria-label="Форматирование текста">
+              <span class="toolbar-label">Стиль</span>
+              <button class="tool-button style-button" type="button" data-style="bold" aria-label="Жирный" aria-pressed="false"><b>B</b></button>
+              <button class="tool-button style-button" type="button" data-style="italic" aria-label="Курсив" aria-pressed="false"><i>I</i></button>
+              <button class="tool-button style-button" type="button" data-style="underlined" aria-label="Подчеркнутый" aria-pressed="false"><u>U</u></button>
+              <button class="tool-button style-button" type="button" data-style="strikethrough" aria-label="Зачеркнутый" aria-pressed="false"><s>S</s></button>
+              <span class="toolbar-label">Регистр</span>
+              <button class="tool-button case-button" type="button" data-case="lower" aria-label="В строчные буквы" title="В строчные">aa</button>
+              <button class="tool-button case-button" type="button" data-case="upper" aria-label="В заглавные буквы" title="В заглавные">AA</button>
+              <button class="tool-button case-button" type="button" data-case="small-caps" aria-label="Преобразовать в Small Capital" title="Small Capital">ᴬᴀ</button>
+            </div>
+            <p class="hint">Регистр и Small Capital меняют выделение или весь текст. Стиль применяется ко всему описанию.</p>
+            <div class="field-grid">
+              <div><div class="field-label"><label for="color-start">Цвет начала</label><span class="hex-value" id="start-value">#C4F266</span></div><div class="input-shell"><input id="color-start" type="color" value="#c4f266" aria-label="Начальный цвет"><span class="hex-value">первый оттенок</span></div></div>
+              <div><div class="field-label"><label for="color-mid">Цвет середины</label><span class="hex-value" id="mid-value">#8DE18E</span></div><div class="input-shell"><input id="color-mid" type="color" value="#8de18e" aria-label="Средний цвет градиента"><span class="hex-value">средний оттенок</span></div></div>
+              <div id="end-color-field"><div class="field-label"><label for="color-end">Цвет конца</label><span class="hex-value" id="end-value">#66D9A2</span></div><div class="input-shell"><input id="color-end" type="color" value="#66d9a2" aria-label="Конечный цвет"><span class="hex-value">последний оттенок</span></div></div>
+            </div>
+            <div class="presets" aria-label="Готовые градиенты">
+              <button class="preset" type="button" data-start="#C4F266" data-mid="#8DE18E" data-end="#66D9A2"><span class="swatch" style="background:linear-gradient(90deg,#c4f266,#8de18e,#66d9a2)"></span>мох</button>
+              <button class="preset" type="button" data-start="#FFB86B" data-mid="#FF8790" data-end="#B576EB"><span class="swatch" style="background:linear-gradient(90deg,#ffb86b,#ff8790,#b576eb)"></span>закат</button>
+              <button class="preset" type="button" data-start="#69C7FF" data-mid="#6881FF" data-end="#A88BFF"><span class="swatch" style="background:linear-gradient(90deg,#69c7ff,#6881ff,#a88bff)"></span>магия</button>
+              <button class="preset" type="button" data-start="#FF623E" data-mid="#FFBF40" data-end="#FFF36B"><span class="swatch" style="background:linear-gradient(90deg,#ff623e,#ffbf40,#fff36b)"></span>огонь</button>
+              <button class="preset" type="button" data-start="#49D6D0" data-mid="#428BEB" data-end="#785EEF"><span class="swatch" style="background:linear-gradient(90deg,#49d6d0,#428beb,#785eef)"></span>океан</button>
+              <button class="preset" type="button" data-start="#FF78B9" data-mid="#AF75FF" data-end="#64A8F8"><span class="swatch" style="background:linear-gradient(90deg,#ff78b9,#af75ff,#64a8f8)"></span>ягоды</button>
+              <label class="gradient-switch"><input id="gradient-enabled" type="checkbox" checked> градиент</label>
+            </div>
+            <div class="compat-row">
+              <div><label class="field-label" for="format-mode">Цвет текста</label><select id="format-mode"><option value="rgb">RGB · Minecraft 1.16+</option><option value="legacy">§-коды · старые версии</option></select></div>
+              <div><label class="field-label" for="minecraft-version">Версия Minecraft</label><select id="minecraft-version">
+                <option value="1.21">1.21</option><option value="1.21.1">1.21.1</option><option value="1.21.2">1.21.2</option><option value="1.21.3">1.21.3</option><option value="1.21.4">1.21.4</option><option value="1.21.5">1.21.5</option><option value="1.21.6">1.21.6</option><option value="1.21.7">1.21.7</option><option value="1.21.8">1.21.8</option><option value="1.21.9">1.21.9</option><option value="1.21.10">1.21.10</option><option value="1.21.11" selected>1.21.11</option>
+              </select></div>
+            </div>
+            <p class="hint" id="format-hint">Формат 75.0 · Minecraft 1.21.11. Градиент сохраняется отдельным RGB-цветом для каждого символа.</p>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="step">02</span> Символы</div><span class="panel-kicker">Нажми, чтобы вставить</span></div>
+          <div class="panel-body">
+            <div class="symbols-head"><span class="subtle">Unicode · UTF-8</span><input class="search" id="symbol-search" type="search" placeholder="Найти символ" aria-label="Найти символ"></div>
+            <div class="symbol-grid" id="symbol-grid" aria-label="Палитра символов"></div>
+            <p class="hint">Отображение отдельных знаков зависит от версии игры и шрифта ресурс-пака.</p>
+          </div>
+        </section>
+      </div>
+      <div class="column">
+        <section class="panel preview-panel">
+          <div class="panel-head"><div class="panel-title"><span class="step">03</span> Как это выглядит</div><span class="panel-kicker">Предпросмотр</span></div>
+          <div class="preview-stage">
+            <div class="game-window">
+              <p class="game-title">Выбор ресурсов</p>
+              <div class="pack-row"><div class="pack-icon" aria-hidden="true"></div><div><div class="pack-name">Новый ресурс-пак</div><div class="pack-description" id="preview-text"></div></div><div class="pack-arrow" aria-hidden="true">›</div></div>
+              <div class="game-buttons"><div class="game-button">Готово</div><div class="game-button">Открыть папку</div></div>
+            </div>
+          </div>
+          <div class="preview-note"><span>Вид списка ресурс-паков · приближенный шрифт</span><strong>LIVE</strong></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div class="panel-title"><span class="step">04</span> pack.mcmeta</div><span class="panel-kicker" id="json-status">JSON · готов</span></div>
+          <div class="tabs" role="tablist" aria-label="Представление результата"><button class="tab" type="button" role="tab" aria-selected="true" data-tab="json">JSON</button><button class="tab" type="button" role="tab" aria-selected="false" data-tab="raw">Описание</button></div>
+          <div class="json-wrap"><pre id="output" aria-live="polite"></pre></div>
+          <div class="actions"><button class="action primary" id="download" type="button"><span class="action-icon" aria-hidden="true">↓</span> Скачать pack.mcmeta</button><button class="action" id="copy" type="button"><span class="action-icon" aria-hidden="true">▣</span> Копировать</button></div>
+        </section>
+      </div>
+    </section>
+    <footer class="footer"><span>Сборка происходит в браузере. Текст никуда не отправляется.</span><a href="https://minecraft.wiki/w/Pack.mcmeta" target="_blank" rel="noreferrer">Формат pack.mcmeta ↗</a></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    (() => {
+      const description = document.querySelector('#description');
+      const startPicker = document.querySelector('#color-start');
+      const middlePicker = document.querySelector('#color-mid');
+      const endPicker = document.querySelector('#color-end');
+      const gradientToggle = document.querySelector('#gradient-enabled');
+      const formatMode = document.querySelector('#format-mode');
+      const minecraftVersion = document.querySelector('#minecraft-version');
+      const preview = document.querySelector('#preview-text');
+      const output = document.querySelector('#output');
+      const symbolGrid = document.querySelector('#symbol-grid');
+      const toast = document.querySelector('#toast');
+      const styles = { bold: false, italic: false, underlined: false, strikethrough: false };
+      const symbols = [
+        ['Звезды', '★ ☆ ✦ ✧ ✩ ✪ ✫ ✬ ✭ ✮ ✯ ✰ ⋆ ✵ ✶ ✷ ✸ ✹ ✺ ✻ ✼ ✽ ✾ ✿'],
+        ['Фигуры', '◆ ◇ ■ □ ▣ ▪ ▫ ● ○ ◉ ◎ ◈ ◊ ▰ ▱ ▲ △ ▼ ▽ ◀ ▶ ◁ ▷'],
+        ['Сердца', '❤ ♥ ♡ ❥ ❣ ღ ❦ ❧'],
+        ['Природа', '☀ ☼ ☾ ☽ ❄ ❅ ❆ ☘ ⚘ ❀ ✿ ❁ ❃ ❋ ♧ ♣'],
+        ['Знаки', '✓ ✔ ✕ ✖ ✗ ⚠ ☠ ⚑ ⚔ ☯ ☮ ⚡ ☢ ☣'],
+        ['Стрелки', '➜ ➤ ➔ ➳ ➵ ➸ ⇢ ⇨ » › ← ↑ → ↓ ↔ ↕ ⇐ ⇑ ⇒ ⇓ ⇔ ⇢'],
+        ['Музыка', '♫ ♪ ♬ ♩ ♭ ♮ ♯'],
+        ['Масти', '♠ ♤ ♣ ♧ ♥ ♡ ♦ ♢'],
+        ['Математика', '∞ ≈ ≠ ≤ ≥ ± × ÷ √ ∑ ∆ ∏'],
+        ['Рамки и знаки', '§ ¶ ※ ⁂ ⌘ ⌖ ⌁ ∎ ▪ • ◦ ‣ ⟡ ⌜ ⌟']
+      ].flatMap(([group, characters]) => Array.from(characters.replaceAll(' ', '')).map(character => ({ group, character })));
+      const smallCapitalMap = new Map();
+      [
+        ['abcdefghijklmnopqrstuvwxyz', 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ'],
+        ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢ'],
+        ['абвгдеёжзийклмнопрстуфхцчшщъыьэюя', 'ᴀбʙᴦдᴇёжзийᴋᴧʍноᴨᴩᴄᴛуɸхцчɯщъыь϶юя'],
+        ['АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ', 'ᴀбʙᴦдᴇёжзийᴋᴧʍноᴨᴩᴄᴛуɸхцчɯщъыь϶юя']
+      ].forEach(([source, target]) => Array.from(source).forEach((character, index) => smallCapitalMap.set(character, Array.from(target)[index])));
+      const minecraftVersions = {
+        '1.21': 34, '1.21.1': 34, '1.21.2': 42, '1.21.3': 42, '1.21.4': 46,
+        '1.21.5': 55, '1.21.6': 63, '1.21.7': 64, '1.21.8': 64,
+        '1.21.9': [69, 0], '1.21.10': [69, 0], '1.21.11': [75, 0]
+      };
+      const legacyPalette = [
+        ['0', '#000000'], ['1', '#0000aa'], ['2', '#00aa00'], ['3', '#00aaaa'], ['4', '#aa0000'], ['5', '#aa00aa'], ['6', '#ffaa00'], ['7', '#aaaaaa'],
+        ['8', '#555555'], ['9', '#5555ff'], ['a', '#55ff55'], ['b', '#55ffff'], ['c', '#ff5555'], ['d', '#ff55ff'], ['e', '#ffff55'], ['f', '#ffffff']
+      ];
+      let activeTab = 'json';
+      let toastTimer;
+
+      const graphemes = value => Array.from(value);
+      const toRgb = hex => [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16));
+      const toHex = rgb => '#' + rgb.map(value => Math.round(value).toString(16).padStart(2, '0')).join('');
+      const mix = (left, right, amount) => left.map((value, index) => value + (right[index] - value) * amount);
+      const rgbDistance = (left, right) => left.reduce((sum, value, index) => sum + (value - right[index]) ** 2, 0);
+      const colorAt = (index, length) => {
+        if (!gradientToggle.checked || length < 2) return startPicker.value;
+        const position = index / (length - 1);
+        const colors = [startPicker.value, middlePicker.value, endPicker.value].map(toRgb);
+        const segment = position <= 0.5 ? 0 : 1;
+        const amount = position <= 0.5 ? position * 2 : (position - 0.5) * 2;
+        return toHex(mix(colors[segment], colors[segment + 1], amount));
+      };
+      const activeStyles = () => Object.fromEntries(Object.entries(styles).filter(([, enabled]) => enabled));
+      const safeColor = color => /^#[0-9a-f]{6}$/i.test(color) ? color : '#ffffff';
+
+      function buildComponent() {
+        const chars = graphemes(description.value);
+        const style = activeStyles();
+        if (formatMode.value === 'legacy') {
+          const legacyText = chars.map((character, index) => {
+            const target = toRgb(colorAt(index, chars.length));
+            const [code] = legacyPalette.reduce((best, entry) => {
+              const distance = rgbDistance(target, toRgb(entry[1]));
+              return distance < best[1] ? [entry[0], distance] : best;
+            }, ['', Infinity]);
+            const styleCodes = [style.bold && '§l', style.italic && '§o', style.underlined && '§n', style.strikethrough && '§m'].filter(Boolean).join('');
+            return `§${code}${styleCodes}${character}`;
+          }).join('') + (chars.length ? '§r' : '');
+          return legacyText;
+        }
+        if (!chars.length) return { text: '', color: safeColor(startPicker.value), ...style };
+        return chars.map((character, index) => ({ text: character, color: safeColor(colorAt(index, chars.length)), ...style }));
+      }
+
+      function buildMeta() {
+        const pack = {};
+        const format = minecraftVersions[minecraftVersion.value];
+        if (Array.isArray(format)) {
+          pack.min_format = format;
+          pack.max_format = format;
+        } else {
+          pack.pack_format = format;
+        }
+        pack.description = buildComponent();
+        return { pack };
+      }
+
+      function renderPreview() {
+        const chars = graphemes(description.value);
+        preview.replaceChildren();
+        chars.forEach((character, index) => {
+          if (character === '\n') {
+            preview.append(document.createElement('br'));
+            return;
+          }
+          const span = document.createElement('span');
+          span.textContent = character;
+          span.style.color = colorAt(index, chars.length);
+          span.style.fontWeight = styles.bold ? '700' : '400';
+          span.style.fontStyle = styles.italic ? 'italic' : 'normal';
+          span.style.textDecoration = [styles.underlined && 'underline', styles.strikethrough && 'line-through'].filter(Boolean).join(' ') || 'none';
+          preview.append(span);
+        });
+        document.querySelector('#char-count').textContent = `${chars.length} символ${chars.length % 10 === 1 && chars.length % 100 !== 11 ? '' : chars.length % 10 >= 2 && chars.length % 10 <= 4 && (chars.length % 100 < 12 || chars.length % 100 > 14) ? 'а' : 'ов'}`;
+        document.querySelector('#start-value').textContent = startPicker.value.toUpperCase();
+        document.querySelector('#mid-value').textContent = middlePicker.value.toUpperCase();
+        document.querySelector('#end-value').textContent = endPicker.value.toUpperCase();
+        document.querySelector('#end-color-field').style.opacity = gradientToggle.checked ? '1' : '.42';
+        const format = minecraftVersions[minecraftVersion.value];
+        const colorHint = formatMode.value === 'legacy'
+          ? 'Цвета заменяются ближайшими из 16 кодов §.'
+          : 'Градиент сохраняется отдельным RGB-цветом для каждого символа.';
+        const formatLabel = Array.isArray(format) ? `[${format.join(', ')}]` : format;
+        const schemaLabel = Array.isArray(format) ? `min_format / max_format ${formatLabel}` : `pack_format ${formatLabel}`;
+        document.querySelector('#format-hint').textContent = `Minecraft ${minecraftVersion.value} · ${schemaLabel}. ${colorHint}`;
+        const meta = buildMeta();
+        const json = JSON.stringify(meta, null, 2);
+        document.querySelector('#json-status').textContent = `${formatMode.value === 'legacy' ? '§-КОДЫ' : 'JSON'} · ${minecraftVersion.value}`;
+        output.textContent = activeTab === 'json' ? json : (typeof meta.pack.description === 'string' ? meta.pack.description : description.value);
+      }
+
+      function renderSymbols() {
+        const query = document.querySelector('#symbol-search').value.trim().toLocaleLowerCase('ru');
+        const matches = symbols.filter(item => !query || item.character.includes(query) || item.group.toLocaleLowerCase('ru').includes(query));
+        symbolGrid.replaceChildren();
+        if (!matches.length) {
+          const empty = document.createElement('div');
+          empty.className = 'symbol-empty';
+          empty.textContent = 'Ничего не найдено';
+          symbolGrid.append(empty);
+          return;
+        }
+        matches.forEach(({ character, group }) => {
+          const button = document.createElement('button');
+          button.className = 'symbol';
+          button.type = 'button';
+          button.textContent = character;
+          button.title = `${character} · ${group}`;
+          button.setAttribute('aria-label', `Вставить символ ${character}, ${group}`);
+          button.addEventListener('click', () => {
+            const start = description.selectionStart;
+            const end = description.selectionEnd;
+            description.setRangeText(character, start, end, 'end');
+            description.dispatchEvent(new Event('input', { bubbles: true }));
+            description.focus();
+          });
+          symbolGrid.append(button);
+        });
+      }
+
+      function notify(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 1900);
+      }
+
+      function changeCase(mode) {
+        const hasSelection = description.selectionStart !== description.selectionEnd;
+        const start = hasSelection ? description.selectionStart : 0;
+        const end = hasSelection ? description.selectionEnd : description.value.length;
+        const selectedText = description.value.slice(start, end);
+        const converted = mode === 'small-caps'
+          ? Array.from(selectedText, character => smallCapitalMap.get(character) ?? character).join('')
+          : mode === 'upper'
+            ? selectedText.toLocaleUpperCase('ru-RU')
+            : selectedText.toLocaleLowerCase('ru-RU');
+        description.setRangeText(converted, start, end, hasSelection ? 'select' : 'end');
+        description.dispatchEvent(new Event('input', { bubbles: true }));
+        description.focus();
+      }
+
+      async function copyOutput() {
+        const text = JSON.stringify(buildMeta(), null, 2);
+        try {
+          await navigator.clipboard.writeText(text);
+          notify('JSON скопирован');
+        } catch {
+          const helper = document.createElement('textarea');
+          helper.value = text;
+          helper.style.position = 'fixed';
+          helper.style.opacity = '0';
+          document.body.append(helper);
+          helper.select();
+          document.execCommand('copy');
+          helper.remove();
+          notify('JSON скопирован');
+        }
+      }
+
+      function downloadFile() {
+        const file = new Blob([JSON.stringify(buildMeta(), null, 2) + '\n'], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(file);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = 'pack.mcmeta';
+        anchor.click();
+        URL.revokeObjectURL(url);
+        notify('pack.mcmeta скачан');
+      }
+
+      document.querySelectorAll('.style-button').forEach(button => button.addEventListener('click', () => {
+        const style = button.dataset.style;
+        styles[style] = !styles[style];
+        button.setAttribute('aria-pressed', String(styles[style]));
+        renderPreview();
+      }));
+      document.querySelectorAll('.case-button').forEach(button => button.addEventListener('click', () => changeCase(button.dataset.case)));
+      document.querySelectorAll('.preset').forEach(button => button.addEventListener('click', () => {
+        startPicker.value = button.dataset.start;
+        middlePicker.value = button.dataset.mid;
+        endPicker.value = button.dataset.end;
+        gradientToggle.checked = true;
+        renderPreview();
+      }));
+      document.querySelectorAll('.tab').forEach(button => button.addEventListener('click', () => {
+        activeTab = button.dataset.tab;
+        document.querySelectorAll('.tab').forEach(tab => tab.setAttribute('aria-selected', String(tab === button)));
+        renderPreview();
+      }));
+      [description, startPicker, middlePicker, endPicker, gradientToggle, formatMode, minecraftVersion].forEach(element => element.addEventListener('input', renderPreview));
+      document.querySelector('#symbol-search').addEventListener('input', renderSymbols);
+      document.querySelector('#copy').addEventListener('click', copyOutput);
+      document.querySelector('#download').addEventListener('click', downloadFile);
+      renderSymbols();
+      renderPreview();
+    })();
+  </script>
+</body>
+</html>
